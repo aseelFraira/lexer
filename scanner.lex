@@ -13,6 +13,10 @@ RELOP   (==|!=|>=|<=|>|<)
 BINOP   (\+|\-|\*|/)
 letter  [a-zA-Z]
 digit   [0-9]
+anyCharec [!#-\[\]-~]
+hexa [0-9A-Fa-f]
+esc [\\ntr"0]|(x([0-7]){hexa}{2})
+stringchar ({anyCharec}|\t|(\\{esc})|[ ])
 %x STRING_S
 
 %%
@@ -53,11 +57,11 @@ digit   [0-9]
 {letter}({letter}|{digit})* { printToken(yylineno, ID, yytext); return ID; }
 0|[1-9][0-9]*               { printToken(yylineno, NUM, yytext); return NUM; }
 (0|[1-9][0-9]*)b            { printToken(yylineno, NUM_B, yytext); return NUM_B; }
+\"{stringchar}*\"            {printToken(yylineno,STRING_S,yytext); return STRING;}    
+\"{stringchar}+               {return UNCLOSED_STRING;}
+\"(stringchar)*\\[^\\ntr\"0]  {return UNDEF_ESCAPE;}
 
 
-
-
-
-.                          { return ERROR; }
+.                          { return UNKNOWN_CHAR; }
 
 %%

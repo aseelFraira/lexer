@@ -1,6 +1,6 @@
 #ifndef TOKENS_HPP
 #define TOKENS_HPP
-
+#define STRSIZE 1024
 enum tokentype {
     VOID = 1,
     INT,
@@ -32,7 +32,10 @@ enum tokentype {
     ID,
     NUM,
     NUM_B,
-    STRING
+    STRING,
+    UNCLOSED_STRING,
+    UNKNOWN_CHAR,
+    UNDEF_ESCAPE
 };
 
 extern int yylineno;
@@ -40,5 +43,5 @@ extern char *yytext;
 extern int yyleng;
 
 extern int yylex();
-
+  extern char *command_line[STRSIZE];
 #endif //TOKENS_HPP
