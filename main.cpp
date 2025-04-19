@@ -4,9 +4,10 @@
 #include <sstream>
 using std::cout;
 using std::endl;
-void printGivenToken();
+
 void checkToken(int token);
-void printGivenToken(std::string name);
+void rebuildString();
+
 int main() {
     enum tokentype token;
 
@@ -17,145 +18,156 @@ int main() {
     }
     return 0;
 }
-void printGivenToken(std::string name){
-    cout << yylineno << " " << name << " " << yytext << endl;
-}
+
 
 void checkToken(int token) {
     switch (token) {
         case VOID:
-            printGivenToken("VOID");
+            output::printToken(yylineno,VOID,yytext);
             break;
         case INT:
-            printGivenToken("INT");
+            output::printToken(yylineno,INT,yytext);
             break;
         case BYTE:
-            printGivenToken("BYTE");
+            output::printToken(yylineno,BYTE,yytext);
             break;
         case BOOL:
-            printGivenToken("BOOL");
+            output::printToken(yylineno,BOOL,yytext);
             break;
         case AND:
-            printGivenToken("AND");
+            output::printToken(yylineno,AND,yytext);
             break;
         case OR:
-            printGivenToken("OR");
+            output::printToken(yylineno,OR,yytext);
             break;
         case NOT:
-            printGivenToken("NOT");
+            output::printToken(yylineno,NOT,yytext);
             break;
         case TRUE:
-            printGivenToken("TRUE");
+           output::printToken(yylineno, TRUE, yytext);
             break;
         case FALSE:
-            printGivenToken("FALSE");
+            output::printToken(yylineno, FALSE, yytext);
             break;
         case RETURN:
-            printGivenToken("RETURN");
+            output::printToken(yylineno, RETURN, yytext);
             break;
         case IF:
-            printGivenToken("IF");
+            output::printToken(yylineno, IF, yytext);
             break;
         case ELSE:
-            printGivenToken("ELSE");
+            output::printToken(yylineno, ELSE, yytext);
             break;
         case WHILE:
-            printGivenToken("WHILE");
+            output::printToken(yylineno, WHILE, yytext);
             break;
         case BREAK:
-            printGivenToken("BREAK");
+            output::printToken(yylineno, BREAK, yytext);
             break;
         case CONTINUE:
-            printGivenToken("CONTINUE");
+            output::printToken(yylineno, CONTINUE, yytext);
             break;
         case SC:
-            printGivenToken("SC");
+            output::printToken(yylineno, SC, yytext);
             break;
         case COMMA:
-            printGivenToken("COMMA");
+            output::printToken(yylineno, COMMA, yytext); 
             break;
         case LPAREN:
-            printGivenToken("LPAREN");
+            output::printToken(yylineno, LPAREN, yytext);
             break;
         case RPAREN:
-            printGivenToken("RPAREN");
+            output::printToken(yylineno, RPAREN, yytext);
             break;
         case LBRACE:
-            printGivenToken("LBRACE");
+            output::printToken(yylineno, LBRACE, yytext);
             break;
         case RBRACE:
-            printGivenToken("RBRACE");
+            output::printToken(yylineno, RBRACE, yytext);
+            break;
+        case LBRACK:
+            output::printToken(yylineno, LBRACK, yytext);
+            break;
+        case RBRACK:
+            output::printToken(yylineno, RBRACK, yytext);
             break;
         case ASSIGN:
-            printGivenToken("ASSIGN");
+            output::printToken(yylineno, ASSIGN, yytext);
             break;
         case RELOP:
-            printGivenToken("RELOP");
+            output::printToken(yylineno, RELOP, yytext);
             break;
         case COMMENT:
-            cout << yylineno << " COMMENT //" << endl;
+            output::printToken(yylineno, COMMENT, yytext);
             break;
         case BINOP:
-            printGivenToken("BINOP");
+            output::printToken(yylineno, BINOP, yytext);
             break;
         case ID:
-            printGivenToken("ID");
+            output::printToken(yylineno, ID, yytext);
             break;
         case NUM:
-            printGivenToken("NUM");
+            output::printToken(yylineno, NUM, yytext);
             break;
-            case NUM_B:
-            printGivenToken("NUM_B");
+        case NUM_B:
+            output::printToken(yylineno, NUM_B, yytext);
             break;
         case STRING:
-            printString();
+        //output::printToken(yylineno,STRING,yytext);
+            rebuildString();
             break;
         case UNCLOSED_STRING:
             output::errorUnclosedString();
-            exit(0);
+            
             break;
         case UNDEF_ESCAPE:
             output::errorUndefinedEscape(yytext);//should i give it something else
-           exit(0);
+          // yes you should :)
             break;
         case UNKNOWN_CHAR:
-            output::errorUnknownChar((char)yytext);
-            exit(0);
+            //cout<<yytext<<std::endl;
+            output::errorUnknownChar(yytext[0]);//not sure if thats enough
+            break;
+            
     }
 }
-void printString(){//chack ig this works??
+void rebuildString() {
     std::string str(yytext);
-    cout << yylineno << " STRING " ;
-    for(int i = 0; i < str.size(); i++){
+    std::ostringstream out;
+    
+    for (size_t i = 0; i < str.size(); ++i) {
         char ch = str[i];
-        char next_ch = str[i + 1];
-        if(ch == '"') continue;
-        else if(ch == '\\' && next_ch == 'x'){
-            std::stringstream ss;
-            ss << std::hex << str.substr(i+2, 2);
-            int x;
-            ss >> x;
-            cout << char(x);
-            i += 3;
-        } else if(ch == '\\' && next_ch == 'n'){
-            cout << '\n';
-            i++;
-        } else if(ch == '\\' && next_ch == 'r') {
-            cout << '\r';
-            i++;
-        } else if(ch == '\\' && next_ch == 't'){
-            cout << '\t';
-            i++;
+        char next = (i + 1 < str.size()) ? str[i + 1] : '\0';
+        char next2 = (i + 2 < str.size()) ? str[i + 2] : '\0';
+        char next3 = (i + 3 < str.size()) ? str[i + 3] : '\0';
+
+        if (ch == '"') continue;  // Skip quotes
+
+        else if (ch == '\\') {
+            if (next == 'n')      { out << '\n'; i++; }
+            else if (next == 't') { out << '\t'; i++; }
+            else if (next == 'r') { /* skip \r */ i++; }
+            else if (next == '0') { out << '\0'; i++; }
+            else if (next == '"') { out << '"';  i++; }
+            else if (next == '\\'){ out << '\\'; i++; }
+            else if (next == 'x' && isxdigit(next2) && isxdigit(next3)) {
+                std::stringstream ss;
+                ss << std::hex << str.substr(i + 2, 2);
+                int val;
+                ss >> val;
+                out << static_cast<char>(val);
+                i += 3;
+            }
+            else {
+                // Undefined escape, just print the raw backslash and next char
+                out << '\\' << next;
+                i++;
+            }
         }
-        else if(ch == '\\' && next_ch == '\"'){
-            cout << '\"';
-            i++;
-        } else if(ch == '\\'){
-            cout << '\\';
-            i++;
-        } else {
-            cout << ch;
+        else {
+            out << ch;
         }
     }
-    cout << endl;
+
+    std::cout << yylineno << " STRING " << out.str() << std::endl;
 }
