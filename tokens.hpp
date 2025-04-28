@@ -32,10 +32,7 @@ enum tokentype {
     ID,
     NUM,
     NUM_B,
-    STRING,
-    UNCLOSED_STRING,
-    UNKNOWN_CHAR,
-    UNDEF_ESCAPE
+    STRING
 };
 
 extern int yylineno;
@@ -43,5 +40,5 @@ extern char *yytext;
 extern int yyleng;
 
 extern int yylex();
-  extern char *command_line[STRSIZE];
+extern char *command_line[STRSIZE];
 #endif //TOKENS_HPP
